@@ -1,8 +1,10 @@
-package org.SBB.controller
+package org.SBB.domain.controller
 
-import org.SBB.service.AppService
+import org.SBB.domain.entity.UrlFormat
+import org.SBB.domain.service.AppService
 
 class AppController(private val appService: AppService) {
+    private val pageSize = 5
 
     fun SaveController() {
         print("명언 : ");
@@ -15,8 +17,9 @@ class AppController(private val appService: AppService) {
         println("${id}번 명언이 등록되었습니다.")
     }
 
-    fun ListController(page: Int = 1, pageSize: Int = 5) {
-        val posts = appService.getPosts()
+    fun ListController(urlFormat: UrlFormat) {
+        val posts = appService.getPosts(urlFormat)
+        val page = urlFormat.params["page"]?.toInt() ?: 1
         val pagedPosts = posts.drop((page - 1) * pageSize).take(pageSize)
 
         println("번호 / 작가 / 명언")
@@ -25,12 +28,13 @@ class AppController(private val appService: AppService) {
             println("${it.id} / ${it.author} / ${it.content}")
         }
 
-        val totalPages = (posts.size + pageSize - 1) / pageSize
+        val totalPages = if (posts.size != 0) (posts.size + pageSize - 1) / pageSize else 1
         println("----------------------")
-        println("페이지 : ${if (page > 1) "[${page - 1}]" else ""} $page / ${if (page < totalPages) "[${page + 1}]" else ""}")
+        println("페이지 : $page / $totalPages")
     }
 
-    fun ModifyController(id: Int) {
+    fun ModifyController(urlFormat: UrlFormat) {
+        val id = urlFormat.params["id"]?.toInt() ?: 0
         val post = appService.getPost(id)
 
         if (post == null) {
@@ -48,7 +52,8 @@ class AppController(private val appService: AppService) {
         appService.modifyPost(id, content, author)
     }
 
-    fun DeleteController(id: Int) {
+    fun DeleteController(urlFormat: UrlFormat) {
+        val id = urlFormat.params["id"]?.toInt() ?: 0
         val post = appService.getPost(id)
 
         if (post == null) {
