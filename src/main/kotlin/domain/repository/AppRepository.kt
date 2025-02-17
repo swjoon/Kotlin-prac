@@ -1,6 +1,7 @@
-package org.SBB.repository
+package org.SBB.domain.repository
 
-import org.SBB.entity.Post
+import org.SBB.domain.entity.Post
+import org.SBB.domain.entity.UrlFormat
 
 interface AppRepository {
 
@@ -9,6 +10,8 @@ interface AppRepository {
     fun save(post: Post): Int
 
     fun findAll(): List<Post>
+
+    fun findAllBySearch(urlFormat: UrlFormat): List<Post>
 
     fun delete(id: Int)
 
