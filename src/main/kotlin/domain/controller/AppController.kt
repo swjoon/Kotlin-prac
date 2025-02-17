@@ -15,12 +15,19 @@ class AppController(private val appService: AppService) {
         println("${id}번 명언이 등록되었습니다.")
     }
 
-    fun ListController() {
+    fun ListController(page: Int = 1, pageSize: Int = 5) {
+        val posts = appService.getPosts()
+        val pagedPosts = posts.drop((page - 1) * pageSize).take(pageSize)
+
         println("번호 / 작가 / 명언")
         println("----------------------")
-        appService.getPosts().forEach { (id, post) ->
-            println("$id / ${post.author} / ${post.content}")
+        pagedPosts.forEach {
+            println("${it.id} / ${it.author} / ${it.content}")
         }
+
+        val totalPages = (posts.size + pageSize - 1) / pageSize
+        println("----------------------")
+        println("페이지 : ${if (page > 1) "[${page - 1}]" else ""} $page / ${if (page < totalPages) "[${page + 1}]" else ""}")
     }
 
     fun ModifyController(id: Int) {
@@ -50,5 +57,9 @@ class AppController(private val appService: AppService) {
         }
 
         appService.deletePost(id)
+    }
+
+    fun BuildController() {
+        appService.buildJson()
     }
 }
