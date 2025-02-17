@@ -1,7 +1,8 @@
-package org.SBB.service
+package org.SBB.domain.service
 
-import org.SBB.entity.Post
-import org.SBB.repository.AppFileRepository
+import org.SBB.domain.entity.Post
+import org.SBB.domain.entity.UrlFormat
+import org.SBB.domain.repository.AppFileRepository
 
 class AppService(private val appRepository: AppFileRepository) {
 
@@ -9,7 +10,8 @@ class AppService(private val appRepository: AppFileRepository) {
 
     fun getPost(id: Int): Post? = appRepository.findPostById(id)
 
-    fun getPosts(): List<Post> = appRepository.findAll()
+    fun getPosts(urlFormat: UrlFormat): List<Post> =
+        if (urlFormat.params.containsKey("keywordType") && urlFormat.params.containsKey("keyword")) appRepository.findAllBySearch(urlFormat) else appRepository.findAll()
 
     fun modifyPost(postId: Int, content: String, author: String) = appRepository.modify(postId, content, author)
 
